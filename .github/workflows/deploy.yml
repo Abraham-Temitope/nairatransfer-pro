@@ -43,7 +43,7 @@ jobs:
               run: |
                   docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
                   docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-                  echo "Successfully pushed image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+                  echo "✅ Successfully pushed image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
             - name: Force new deployment on ECS
               run: |
@@ -52,4 +52,4 @@ jobs:
                     --service ${{ env.ECS_SERVICE }} \
                     --force-new-deployment \
                     --region ${{ env.AWS_REGION }}
-                  echo "Deployment triggered successfully"
+                  echo "✅ Deployment triggered successfully"
