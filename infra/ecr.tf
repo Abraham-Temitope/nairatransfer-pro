@@ -7,3 +7,5 @@ resource "aws_ecr_repository" "main" {
     scan_on_push = true
   }
 }
+
+# i dont need this
