@@ -4,11 +4,12 @@ resource "aws_cloudwatch_log_group" "main" {
   retention_in_days = 7
 }
 
-# ====================== ECS CLUSTER & TASK ======================
+# ====================== ECS CLUSTER ======================
 resource "aws_ecs_cluster" "main" {
   name = "${var.app_name}-cluster"
 }
 
+# ====================== ECS TASK DEFINITION ======================
 resource "aws_ecs_task_definition" "app" {
   family                   = "${var.app_name}-task"
   network_mode             = "awsvpc"
@@ -22,11 +23,13 @@ resource "aws_ecs_task_definition" "app" {
     name      = "app"
     image     = "${aws_ecr_repository.main.repository_url}:${var.image_tag}"
     essential = true
+
     portMappings = [{
       containerPort = 8000
       hostPort      = 8000
       protocol      = "tcp"
     }]
+
     logConfiguration = {
       logDriver = "awslogs"
       options = {
@@ -35,6 +38,7 @@ resource "aws_ecs_task_definition" "app" {
         "awslogs-stream-prefix" = "ecs"
       }
     }
+
     healthCheck = {
       command     = ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval    = 30
