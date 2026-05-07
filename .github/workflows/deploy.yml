@@ -1,55 +1,55 @@
 name: Deploy to AWS ECS
 
 on:
-    push:
-        branches: [ main ]
-        paths:
-            - "app/**"
-            - "Dockerfile"
-            - ".github/workflows/deploy.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "app/**"
+      - "Dockerfile"
+      - ".github/workflows/deploy.yml"
 
 env:
-    AWS_REGION: eu-north-1
-    ECR_REPOSITORY: nairatransfer-pro
-    ECS_CLUSTER: nairatransfer-pro-cluster
-    ECS_SERVICE: nairatransfer-pro-service
+  AWS_REGION: eu-north-1
+  ECR_REPOSITORY: nairatransfer-pro
+  ECS_CLUSTER: nairatransfer-pro-cluster
+  ECS_SERVICE: nairatransfer-pro-service
 
 permissions:
-    id-token: write
-    contents: read
+  id-token: write
+  contents: read
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-                  role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-                  aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
 
-            - name: Login to Amazon ECR
-              id: login-ecr
-              uses: aws-actions/amazon-ecr-login@v2
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-            - name: Build and push Docker image to ECR
-              env:
-                  ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-                  IMAGE_TAG: ${{ github.sha }}
-              run: |
-                  docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-                  docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-                  echo "✅ Successfully pushed image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      - name: Build and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "✅ Image pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-            - name: Force new deployment on ECS
-              run: |
-                  aws ecs update-service \
-                    --cluster ${{ env.ECS_CLUSTER }} \
-                    --service ${{ env.ECS_SERVICE }} \
-                    --force-new-deployment \
-                    --region ${{ env.AWS_REGION }}
-                  echo "✅ Deployment triggered successfully"
+      - name: Trigger new deployment on ECS
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_SERVICE }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+          echo "✅ Deployment triggered. New task will pull the latest image."
