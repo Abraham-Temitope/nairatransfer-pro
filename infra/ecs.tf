@@ -10,6 +10,7 @@ resource "aws_ecs_cluster" "main" {
 }
 
 # ====================== ECS TASK DEFINITION ======================
+
 resource "aws_ecs_task_definition" "app" {
   family                   = "${var.app_name}-task"
   network_mode             = "awsvpc"
@@ -21,7 +22,7 @@ resource "aws_ecs_task_definition" "app" {
 
   container_definitions = jsonencode([{
     name      = "app"
-    image     = "${aws_ecr_repository.main.repository_url}:${var.image_tag}"
+    image     = "${aws_ecr_repository.main.repository_url}:latest"
     essential = true
 
     portMappings = [{
@@ -39,15 +40,19 @@ resource "aws_ecs_task_definition" "app" {
       }
     }
 
+    # Health check for Python image
     healthCheck = {
-      command     = ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      command     = ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5)\" || exit 1"]
       interval    = 30
-      timeout     = 5
+      timeout     = 10
       retries     = 3
-      startPeriod = 10
+      startPeriod = 45
     }
   }])
 }
+
+
+
 
 # ====================== ECS SERVICE ======================
 resource "aws_ecs_service" "app" {
