@@ -4,5 +4,6 @@ terraform {
     key     = "nairatransfer-pro/terraform.tfstate"
     region  = "eu-north-1"
     encrypt = true
+    dynamodb_table = "nairatransfer-tf-locks"
   }
 }
