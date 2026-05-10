@@ -1,7 +1,12 @@
 NairaTransfer Pro
 A production-style fintech wallet & transfer API built with modern DevOps tools on AWS.
 
-## Week 1 - Live Deployment ✅
+## Week 1 - Live Deployment ✅## What it does
+
+- Deploys FastAPI to AWS ECS Fargate using Terraform
+- CI/CD pipeline with GitHub OIDC - no static AWS keys
+- VPC, ALB, ECR, CloudWatch logging all in IaC
+- Remote state with S3 + DynamoDB locking
 
 **Status:** Successfully deployed on AWS ECS Fargate
 
