@@ -24,6 +24,10 @@ resource "aws_ecs_task_definition" "app" {
     name      = "app"
     image     = "${aws_ecr_repository.main.repository_url}:latest"
     essential = true
+    environment = [{
+      name  = "SQS_QUEUE_URL"
+      value = aws_sqs_queue.main.url
+    }]
 
     portMappings = [{
       containerPort = 8000
