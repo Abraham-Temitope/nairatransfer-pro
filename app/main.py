@@ -5,6 +5,7 @@ import os
 
 app = FastAPI(title="NairaTransfer Pro", version="1.0.0")
 
+# SQS Client
 sqs = boto3.client('sqs', region_name=os.getenv('AWS_REGION', 'eu-north-1'))
 QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 
@@ -18,21 +19,16 @@ def health():
 
 @app.post("/transfer")
 def create_transfer(transfer: dict):
-    """Create a transfer and send it to SQS for processing."""
+    """Create a transfer and send to SQS for async processing"""
     try:
         response = sqs.send_message(
             QueueUrl=QUEUE_URL,
-            MessageBody=json.dumps(transfer),
-            MessageAttributes={
-                'TransferType': {
-                    'StringValue': transfer.get('type', 'standard'),
-                    'DataType': 'String'
-                }
-            }
+            MessageBody=json.dumps(transfer)
         )
+        
         return {
             "status": "queued",
-            "message_id": response.get("MessageId"),
+            "message_id": response['MessageId'],
             "transfer": transfer
         }
     except Exception as e:
