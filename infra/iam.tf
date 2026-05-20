@@ -73,3 +73,18 @@ resource "aws_iam_role_policy_attachment" "alb_controller" {
   role       = aws_iam_role.alb_controller.name
   policy_arn = aws_iam_policy.alb_controller.arn
 }
+
+# IAM policy for ECS task to send messages to SQS
+resource "aws_iam_role_policy" "ecs_task_sqs" {
+  name = "${var.app_name}-ecs-task-sqs"
+  role = aws_iam_role.ecs_task.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = "sqs:SendMessage"
+      Resource = aws_sqs_queue.main.arn
+    }]
+  })
+}
