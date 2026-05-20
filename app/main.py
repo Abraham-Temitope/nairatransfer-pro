@@ -12,7 +12,7 @@ QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 @app.get("/health")
 def health():
     return {
-        "status": "success",
+        "status": "ok",
         "service": "nairatransfer-pro",
         "environment": "prod"
     }
