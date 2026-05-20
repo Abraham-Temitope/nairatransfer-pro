@@ -31,7 +31,7 @@ def create_transfer(transfer: dict):
             }
         )
         return {
-            "status": "success",
+            "status": "queued",
             "message_id": response.get("MessageId"),
             "transfer": transfer
         }
