@@ -29,6 +29,11 @@ resource "aws_ecs_task_definition" "app" {
       value = aws_sqs_queue.main.url
     }]
 
+    secrets = [{
+      name      = "DATABASE_URL"
+      valueFrom = aws_secretsmanager_secret_version.app.arn
+    }]
+
     portMappings = [{
       containerPort = 8000
       hostPort      = 8000
