@@ -15,11 +15,12 @@ A production-style fintech wallet & transfer API built with modern DevOps tools 
 
 **Health Check URL:** [http://nairatransfer-pro-alb-1554992979.eu-north-1.elb.amazonaws.com/health](http://nairatransfer-pro-alb-1554992979.eu-north-1.elb.amazonaws.com/health)
 
-**Response:**```json{"status":"ok","service":"nairatransfer-pro","
+**Response:**```json"status":"ok","service":"nairatransfer-pro","
 
 ## Architecture
 
-![nairatransfer-pro Architecture](./docs/architecture-week1.png)
+![nairatransfer-pro Architecture](./docs/architecture-nairatransfer-pro.png)
+Edit source: [architecture-nairatransfer-pro.drawio] (docs/architecture-nairatransfer-pro.drawio)
 
 \*Design Decisions:\*\*
 
