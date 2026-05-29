@@ -19,8 +19,7 @@ A production-style fintech wallet & transfer API built with modern DevOps tools 
 
 ## Architecture
 
-![nairatransfer-pro Architecture](./docs/architecture-nairatransfer-pro.png)
-Edit source: [architecture-nairatransfer-pro.drawio] (docs/architecture-nairatransfer-pro.drawio)
+![nairatransfer-pro Architecture](./docs/nairatransfer-pro-architecture.png)
 
 \*Design Decisions:\*\*
 
