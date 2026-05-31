@@ -1,47 +1,77 @@
 # NairaTransfer Pro - Runbook
 
-## Overview
+## System Overview
 
-- ECS Fargate + ALB
-- SQS + Lambda worker
-- EKS deployment
+- **Backend**: FastAPI (Python)
+- **Orchestration**: Amazon ECS Fargate + Amazon EKS
+- **Async Processing**: SQS + Lambda Worker + DLQ
+- **Infrastructure**: Terraform + (S3 Remote State & DynamoDB Locking)
+- **CI/CD**: GitHub Actions + OIDC
+
+---
 
 ## Common Incidents & Recovery
 
-### 1. High CPU / Scaling Issue
+### 1. Application Not Responding (503 / 404)
 
-- Check: CloudWatch → Alarms
-- Action:
-  - ECS autoscaling should handle it
-  - For EKS: `kubectl get hpa`
+**Checks:**
 
-  ### 2. SQS Messages Not Processing
-  - Check:
-  - SQS Console → Messages Available
-  - Lambda logs: `aws logs tail /aws/lambda/nairatransfer-pro-worker`
-  - Action: - Check DLQ (`nairatransfer-pro-dlq`)
-  - Reprocess failed messages if needed
+- ALB Target Group health
+- ECS Task status
+- CloudWatch Logs (`/ecs/nairatransfer-pro`)
 
-  ### 3. Application 503 / Not Found
-
-- Check:
-- ALB Target Health
-  - ECS Task status
-  - Logs: CloudWatch Log Group `/ecs/nairatransfer-pro`
-- Action: Force new deployment
-
-## Quick Commands
+**Recovery:**
 
 ```bash
-# Check ECS
+aws ecs update-service \
+  --cluster nairatransfer-pro-cluster \
+  --service nairatransfer-pro-service \
+  --force-new-deployment \
+  --region eu-north-1
 
-aws ecs describe-services --cluster nairatransfer-pro-cluster --services nairatransfer-pro-service --region eu-north-1
+2. Transfers Not Being Processed
+Checks:
 
-# Check Lambda
+    SQS Console → Messages Available / In Flight
+    Lambda Logs
+    DLQ (nairatransfer-pro-dlq)
+
+Recovery:
+
 aws logs tail /aws/lambda/nairatransfer-pro-worker --region eu-north-1 --follow
 
-# Force deployment
+3. High CPU / Performance Issues
+Checks:
+
+    CloudWatch Alarms
+    ECS / EKS metrics
+
+Recovery:
+
+    ECS autoscaling should trigger automatically
+    For EKS: kubectl get hpa
+
+4. Secret or Database Issues
+Recovery:
+
+    Update value in AWS Secrets Manager
+    Run terraform apply
+
+
+# Health Check
+curl http://nairatransfer-pro-alb-723344055.eu-north-1.elb.amazonaws.com/health
+
+# Force Redeploy ECS
 aws ecs update-service --cluster nairatransfer-pro-cluster --service nairatransfer-pro-service --force-new-deployment --region eu-north-1
+
+# Check Lambda Logs
+aws logs tail /aws/lambda/nairatransfer-pro-worker --region eu-north-1 --follow
+
+# Check SQS Queue
+aws sqs get-queue-attributes \
+  --queue-url https://sqs.eu-north-1.amazonaws.com/006508975119/nairatransfer-pro-main-queue \
+  --attribute-names ApproximateNumberOfMessages
+
 
 
 

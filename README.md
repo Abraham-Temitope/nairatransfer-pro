@@ -53,11 +53,14 @@ User → ALB → ECS Fargate / EKS → SQS Queue → Lambda Worker (with DLQ)
 
 ## Repository Structure
 
+```bash
 nairatransfer-pro/
-├── app/ # FastAPI application code
-├── backend/ # Terraform Remote Backend (S3 + DynamoDB)
-├── infra/ # Terraform Infrastructure (VPC, ECS, EKS, etc.)
-├── k8s/ # Kubernetes manifests
-├── lambda/ # Lambda worker code
-├── .github/workflows/ # CI/CD pipelines
-└── docs/ # Architecture diagrams & runbooks
+├── app/                    # FastAPI application code
+├── backend/                # Terraform Remote Backend (S3 + DynamoDB)
+├── infra/                  # Terraform Infrastructure
+├── k8s/                    # Kubernetes manifests
+├── lambda/                 # Lambda worker code
+├── .github/workflows/      # CI/CD pipelines
+└── docs/                   # Architecture & runbooks
+
+```
