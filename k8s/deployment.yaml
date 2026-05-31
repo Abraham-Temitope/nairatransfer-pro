@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nairatransfer-pro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nairatransfer-pro
+  template:
+    metadata:
+      labels:
+        app: nairatransfer-pro
+    spec:
+      containers:
+        - name: app
+          image: 006508975119.dkr.ecr.eu-north-1.amazonaws.com/nairatransfer-pro:latest
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
