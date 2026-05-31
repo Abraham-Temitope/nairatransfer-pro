@@ -27,6 +27,7 @@ User → ALB → ECS Fargate / EKS → SQS Queue → Lambda Worker (with DLQ)
 - **Observability**: Amazon CloudWatch (Metrics, Alarms & Logs)
 - **Security**: AWS Secrets Manager + IAM Least Privilege
 - **Backend**: FastAPI (Python)
+- **Terraform State**: S3(Remote) + DynamoDB Locking
 
 ---
 
@@ -56,8 +57,7 @@ nairatransfer-pro/
 
 ├── app/ # FastAPI application code
 ├── backend/ # Terraform Remote Backend (S3 + DynamoDB)
-├── infra/ # Terraform infrastructure
-├── k8s/ # Kubernetes manifests
-├── lambda/ # Lambda worker code
+├── infra/ # Terraform Infrastructure (VPC, ECS, EKS, etc.)
+├── k8s/ # Kubernetes manifests├── lambda/ # Lambda worker code
 ├── .github/workflows/ # CI/CD pipelines
-└── docs/ # Architecture & diagrams
+└── docs/ # Architecture diagrams & runbooks
