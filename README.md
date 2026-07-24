@@ -11,9 +11,10 @@ A scalable, observable, and asynchronous backend for money transfers, built with
 ## Architecture
 
 ### System Context Diagram v3.2
+
 This diagram shows the full 5-layer AWS architecture. It renders directly in GitHub.
 
-```mermaid
+````mermaid
 C4Context
     title nairatransfer.com - AWS Fintech Architecture v3.2
 
@@ -24,7 +25,7 @@ C4Context
     System_Ext(gh, "GitHub Actions", "Build, Test, Deploy. OIDC to AWS")
 
     System_Boundary(vpc, "AWS VPC - 10.0.0.0/16") {
-        
+
         System(waf, "AWS WAF", "Rate Limiting, Bot Protection")
         System(alb, "Application Load Balancer", "TLS Termination")
 
@@ -67,6 +68,7 @@ C4Context
     Rel(ecs, cw, "")
     Rel(gh, s3, "")
     Rel(gh, ddb, "")
+'''
 
 
 
@@ -118,4 +120,4 @@ nairatransfer-pro/
 ├── .github/workflows/      # CI/CD pipelines
 └── docs/                   # Architecture & runbooks
 
-```
+````
