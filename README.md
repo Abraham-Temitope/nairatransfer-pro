@@ -12,11 +12,9 @@ A scalable, observable, and asynchronous backend for money transfers, built with
 
 ### System Context Diagram v3.2# Fintech Transfer System Architecture
 
-    ```md
-
 ````mermaid
 graph TD
-A[Start] --> B[End]
+A[Start] --> B[End]```
 
 
 
