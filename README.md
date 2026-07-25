@@ -12,16 +12,11 @@ A scalable, observable, and asynchronous backend for money transfers, built with
 
 ### System Context Diagram v3.2# Fintech Transfer System Architecture
 
-````mermaid
+```mermaid
 graph TD
-A[Start] --> B[End]```
+A[Start] --> B[End]
 
-
-
-
-
-
----
+```
 
 ## Tech Stack
 
@@ -69,4 +64,4 @@ nairatransfer-pro/
 ├── .github/workflows/      # CI/CD pipelines
 └── docs/                   # Architecture & runbooks
 
-````
+```
