@@ -12,54 +12,11 @@ A scalable, observable, and asynchronous backend for money transfers, built with
 
 ### System Context Diagram v3.2# Fintech Transfer System Architecture
 
+    ```md
+
 ````mermaid
-flowchart TD
-    A[Client App\nnairatransfer.com] --> R[Route 53]
-
-    subgraph CI/CD
-        F[GitHub Actions] --> H[ECR]
-    end
-
-    subgraph IaC
-        G[Terraform]
-    end
-
-    subgraph Compute
-        I[ECS Fargate]
-        J[EKS + HPA]
-    end
-
-    H --> I
-    H --> J
-    G --> I
-    G --> J
-
-    I --> K[FastAPI Backend]
-    J --> K
-
-    K --> L[RDS PostgreSQL]
-    K --> M[SQS + DLQ]
-    M --> N[Lambda]
-
-    K --> O[Secrets Manager]
-
-    subgraph Observability
-        Q[CloudWatch]
-    end
-
-    I --> Q
-    J --> Q
-    K --> Q
-    L --> Q
-
-    subgraph Networking
-        VPC[AWS VPC\nPublic + Private Subnets\nNAT Gateway]
-    end
-
-    I --> VPC
-    J --> VPC
-    L --> VPC
-
+graph TD
+A[Start] --> B[End]
 
 
 
