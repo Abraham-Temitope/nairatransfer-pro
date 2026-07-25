@@ -13,9 +13,68 @@ A scalable, observable, and asynchronous backend for money transfers, built with
 ### System Context Diagram v3.2# Fintech Transfer System Architecture
 
 ```mermaid
-graph TD
-A[Start] --> B[End]
+C4Context
+title nairatransfer.com - AWS Fintech Architecture v3.2
 
+Person(customer,"Customer","Uses Web/Mobile App to send transfers")
+
+System_Ext(dns,"Amazon Route 53","nairatransfer.com DNS")
+System_Ext(bank,"Partner Bank / NIBSS","Outbound Payouts")
+System_Ext(gh,"GitHub Actions","Build, Test, Deploy. OIDC to AWS")
+
+System_Boundary(vpc,"AWS VPC - 10.0.0.0/16"){
+    System(waf,"AWS WAF","Rate Limiting, Bot Protection")
+    System(alb,"Application Load Balancer","TLS Termination")
+    System(eks,"Amazon EKS","FastAPI Backend API. HPA")
+    System(ecs,"Amazon ECS Fargate","Background Workers")
+    System(irsa,"IRSA","IAM Roles for Service Accounts. No Static Keys")
+    SystemDb(rds,"Amazon RDS PostgreSQL","Ledger, Wallets. Multi-AZ")
+    SystemDb(redis,"Amazon ElastiCache Redis","API Cache")
+    System(sqs,"Amazon SQS","Transfer Job Queue")
+    System(dlq,"SQS Dead Letter Queue","Failed Jobs")
+    System(lambda,"AWS Lambda","DLQ Processor")
+    System(ecr,"Amazon ECR","Container Registry")
+    System(s3,"Amazon S3","Terraform State")
+    System(ddb,"Amazon DynamoDB","Terraform State Lock")
+    System(secrets,"AWS Secrets Manager","Secrets")
+    System(cw,"Amazon CloudWatch","Metrics, Logs, Alarms")
+    System(nat,"NAT Gateway","Outbound Internet")
+}
+
+Rel(customer,dns,"HTTPS 443")
+Rel(dns,waf,"")
+Rel(waf,alb,"")
+Rel(alb,eks,"Ingress")
+Rel(eks,irsa,"Assume Role")
+Rel(ecs,irsa,"Assume Role")
+Rel(eks,sqs,"")
+Rel(ecs,sqs,"")
+Rel(ecs,rds,"")
+Rel(eks,rds,"")
+Rel(ecs,bank,"via NAT")
+Rel(ecs,dlq,"")
+Rel(dlq,lambda,"")
+Rel(gh,ecr,"")
+Rel(eks,ecr,"")
+Rel(ecs,ecr,"")
+Rel(eks,cw,"")
+Rel(ecs,cw,"")
+Rel(gh,s3,"")
+Rel(gh,ddb,"")
+
+UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+
+AddStyleTag("person", $bgColor="#08427B", $fontColor="#ffffff")
+AddStyleTag("external", $bgColor="#999", $fontColor="#ffffff")
+AddStyleTag("system", $bgColor="#1168BD", $fontColor="#ffffff")
+AddStyleTag("database", $bgColor="#438DD5", $fontColor="#ffffff")
+AddStyleTag("aws", $bgColor="#FF9900", $fontColor="#000")
+
+AddStyle(person(customer))
+AddStyle(external(dns,bank,gh))
+AddStyle(system(waf,alb,eks,ecs,irsa,sqs,dlq,lambda,ecr,s3,ddb,secrets,cw,nat))
+AddStyle(database(rds,redis))
+AddStyle(aws(vpc))
 ```
 
 ## Tech Stack
