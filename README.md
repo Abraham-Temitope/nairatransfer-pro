@@ -63,13 +63,7 @@ C4Context
     Rel(ecs, cw, "")
     Rel(gh, s3, "")
     Rel(gh, ddb, "")
-
-    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
-
     ```
-
-
-
 ## Tech Stack
 
 - **IaC**: Terraform
