@@ -10,65 +10,59 @@ A scalable, observable, and asynchronous backend for money transfers, built with
 
 ## Architecture
 
-### System Context Diagram v3.2
-
-This diagram shows the full 5-layer AWS architecture. It renders directly in GitHub.
+### System Context Diagram v3.2# Fintech Transfer System Architecture
 
 ````mermaid
-C4Context
-    title nairatransfer.com - AWS Fintech Architecture v3.2
+flowchart TD
+    A[Client App\nnairatransfer.com] --> R[Route 53]
 
-    Person(customer, "Customer", "Uses Web/Mobile App to send transfers")
+    subgraph CI/CD
+        F[GitHub Actions] --> H[ECR]
+    end
 
-    System_Ext(dns, "Amazon Route 53", "nairatransfer.com DNS")
-    System_Ext(bank, "Partner Bank / NIBSS", "Outbound Payouts")
-    System_Ext(gh, "GitHub Actions", "Build, Test, Deploy. OIDC to AWS")
+    subgraph IaC
+        G[Terraform]
+    end
 
-    System_Boundary(vpc, "AWS VPC - 10.0.0.0/16") {
+    subgraph Compute
+        I[ECS Fargate]
+        J[EKS + HPA]
+    end
 
-        System(waf, "AWS WAF", "Rate Limiting, Bot Protection")
-        System(alb, "Application Load Balancer", "TLS Termination")
+    H --> I
+    H --> J
+    G --> I
+    G --> J
 
-        System(eks, "Amazon EKS", "FastAPI Backend API. HPA")
-        System(ecs, "Amazon ECS Fargate", "Background Workers")
-        System(irsa, "IRSA", "IAM Roles for Service Accounts. No Static Keys")
+    I --> K[FastAPI Backend]
+    J --> K
 
-        SystemDb(rds, "Amazon RDS PostgreSQL", "Ledger, Wallets. Multi-AZ")
-        SystemDb(redis, "Amazon ElastiCache Redis", "API Cache")
+    K --> L[RDS PostgreSQL]
+    K --> M[SQS + DLQ]
+    M --> N[Lambda]
 
-        System(sqs, "Amazon SQS", "Transfer Job Queue")
-        System(dlq, "SQS Dead Letter Queue", "Failed Jobs")
-        System(lambda, "AWS Lambda", "DLQ Processor")
+    K --> O[Secrets Manager]
 
-        System(ecr, "Amazon ECR", "Container Registry")
-        System(s3, "Amazon S3", "Terraform State")
-        System(ddb, "Amazon DynamoDB", "Terraform State Lock")
-        System(secrets, "AWS Secrets Manager", "Secrets")
-        System(cw, "Amazon CloudWatch", "Metrics, Logs, Alarms")
-        System(nat, "NAT Gateway", "Outbound Internet")
-    }
+    subgraph Observability
+        Q[CloudWatch]
+    end
 
-    Rel(customer, dns, "HTTPS 443")
-    Rel(dns, waf, "")
-    Rel(waf, alb, "")
-    Rel(alb, eks, "Ingress")
-    Rel(eks, irsa, "Assume Role")
-    Rel(ecs, irsa, "Assume Role")
-    Rel(eks, sqs, "")
-    Rel(ecs, sqs, "")
-    Rel(ecs, rds, "")
-    Rel(eks, rds, "")
-    Rel(ecs, bank, "via NAT")
-    Rel(ecs, dlq, "")
-    Rel(dlq, lambda, "")
-    Rel(gh, ecr, "")
-    Rel(eks, ecr, "")
-    Rel(ecs, ecr, "")
-    Rel(eks, cw, "")
-    Rel(ecs, cw, "")
-    Rel(gh, s3, "")
-    Rel(gh, ddb, "")
-'''
+    I --> Q
+    J --> Q
+    K --> Q
+    L --> Q
+
+    subgraph Networking
+        VPC[AWS VPC\nPublic + Private Subnets\nNAT Gateway]
+    end
+
+    I --> VPC
+    J --> VPC
+    L --> VPC
+
+
+
+
 
 
 
